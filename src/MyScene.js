@@ -89,13 +89,15 @@ class MyScene extends Scene {
         this.physics.add.collider(this.player, this.bombs, this.hitBomb, null, this);
     }
 
+    // hit by bomb! ends game
     hitBomb(player, bomb) {
         this.physics.pause();
         player.setTint(0xff0000);
         player.anims.play('turn');
         this.gameOver = true;
-        this.gameOverText.visible = true;
         // shows game over txt
+        this.gameOverText.visible = true;
+        this.input.on('pointerdown', () => this.scene.start('preload'))
     }
 
     createPlayer() {
