@@ -1,6 +1,7 @@
 // import Phaser from 'phaser'
-import {  AUTO } from 'phaser';
+import { AUTO } from 'phaser';
 import MyScene from './MyScene';
+import PreloadScene from './PreloadScene'
 
 var config = {
     type: AUTO,
@@ -11,10 +12,10 @@ var config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 300 },
-            debug: false
+            debug: true
         }
     },
-    scene: MyScene
+    scene: [ PreloadScene, MyScene]
 };
 
 export { config }

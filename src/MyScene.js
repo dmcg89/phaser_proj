@@ -3,7 +3,7 @@ import { config } from './config'
 
 class MyScene extends Scene {
     constructor() {
-        super()
+        super('game')
         this.score = 0
         this.gameOver = false
     }
@@ -33,6 +33,9 @@ class MyScene extends Scene {
         this.createBombs();
     
         this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+        this.gameOverText = this.add.text(400, 300, 'GAME OVER', { fontSize: '64px', fill: '#000' });
+        this.gameOverText.setOrigin(.5)
+        this.gameOverText.visible = false
     }
 
     createPlatforms() {
@@ -50,8 +53,11 @@ class MyScene extends Scene {
             setXY: {  x: 12, y: 0, stepX: 70 }
         });
         
+        // this.stars.setCircle(15, 2, 16)
+
         this.stars.children.iterate(function (child) {
             child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+            child.setCircle(12)
         });
         this.physics.add.collider(this.stars, this.platforms);
         this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
@@ -70,6 +76,7 @@ class MyScene extends Scene {
             const x = (this.player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
             const bomb = this.bombs.create(x, 16, 'bomb');
             bomb.setBounce(1);
+            bomb.setCircle(6)
             bomb.setCollideWorldBounds(true);
             bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
     
@@ -87,10 +94,13 @@ class MyScene extends Scene {
         player.setTint(0xff0000);
         player.anims.play('turn');
         this.gameOver = true;
+        this.gameOverText.visible = true;
+        // shows game over txt
     }
 
     createPlayer() {
         this.player = this.physics.add.sprite(100, 450, 'dude');
+        this.player.setCircle(15, 0, 16)
         this.player.setBounce(0.2);
         this.player.setCollideWorldBounds(true);
         this.physics.add.collider(this.player, this.platforms);
