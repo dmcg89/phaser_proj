@@ -13,9 +13,11 @@ class MyScene extends Scene {
   // preload
   preload() {
     this.load.image('sky', '../assets/sky.png');
+    // this.load.image('trees', '../assets/plx-5.png');
     this.load.image('ground', '../assets/platform.png');
     this.load.image('star', '../assets/star.png');
     this.load.image('bomb', '../assets/bomb.png');
+    this.load.image('flag', '../assets/flag.png');
     this.load.image('particle', '../assets/Elipse.png');
     this.load.spritesheet('dude',
       '../assets/dude.png',
@@ -28,23 +30,52 @@ class MyScene extends Scene {
     // const sky = this.add.image(0, 0, 'sky');
     // sky.setOrigin(0, 0);
     this.cameras.main.setBounds(0, 0, 720 * 5, 176);
+    this.physics.world.setBounds(0, 0, 720 * 5, 800);
 
     for (let x = 0; x < 5; x += 1) {
       this.add.image(720 * x, 0, 'sky').setOrigin(0);
     }
+    this.text = this.add.text(16, 16).setText('Score:' + this.score).setScrollFactor(0);
 
     this.createPlatforms();
     this.createPlayer();
     this.createCursor();
     this.createStars();
     this.createBombs();
+    this.createFlag();
 
-    this.createParticles();
+    // this.createParticles();
 
-    this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
-    this.gameOverText = this.add.text(400, 300, 'GAME OVER', { fontSize: '64px', fill: '#000' });
-    this.gameOverText.setOrigin(0.5);
-    this.gameOverText.visible = false;
+    // this.scoreText = this.add.text(this.player.x, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    this.game_over_text = this.add.text(400, 300, 'GAME OVER', { fontSize: '64px', fill: '#000' }).setScrollFactor(0);
+    this.game_over_text.visible = false;
+    // this.gameOverText.setOrigin(0.5);
+    // this.gameOverText.visible = false;
+
+    this.win_text = this.add.text(400, 300, 'You Win!', { fontSize: '64px', fill: '#000' }).setScrollFactor(0);
+    // this.gameWinText.setOrigin(0.5);
+    this.win_text.visible = false;
+  }
+
+  createFlag() {
+    this.flag = this.physics.add.group({
+      key: 'flag',
+      repeat: 1,
+      // setXY: { x: 3500, y: 80 },
+      setXY: { x: 500, y: 80 },
+    });
+    this.physics.add.collider(this.flag, this.platforms);
+    this.physics.add.collider(this.player, this.flag, this.hitFlag, null, this);
+  }
+
+  hitFlag(player) {
+    this.physics.pause();
+    player.setTint(0xff0000);
+    player.anims.play('turn');
+    this.gameOver = true;
+    // shows game over txt
+    this.winText.visible = true;
+    this.input.on('pointerdown', () => this.scene.start('preload'));
   }
 
   createParticles() {
@@ -90,7 +121,7 @@ class MyScene extends Scene {
   createStars() {
     this.stars = this.physics.add.group({
       key: 'star',
-      repeat: 11,
+      repeat: 100,
       setXY: { x: 12, y: 0, stepX: 70 },
     });
 
@@ -124,7 +155,25 @@ class MyScene extends Scene {
   }
 
   createBombs() {
-    this.bombs = this.physics.add.group();
+    this.bombs = this.physics.add.group({
+      key: 'bomb',
+      // repeat: 30,
+      repeat: 1,
+      setXY: { x: 12, y: 0, stepX: 200 },
+    });
+
+    this.bombs.children.iterate((child) => {
+      child.setBounce(1);
+      child.setCircle(6);
+      child.setCollideWorldBounds(true);
+      child.setVelocity(Phaser.Math.Between(-200, 200), 20);
+    });
+    // this.bombs.setBounce(1);
+    // this.bombs.setCircle(6);
+    // this.bombs.setCollideWorldBounds(true);
+    // this.bombs.setVelocity(Phaser.Math.Between(-200, 200), 20);
+
+    // this.bombs = this.physics.add.group();
     this.physics.add.collider(this.bombs, this.platforms);
     this.physics.add.collider(this.player, this.bombs, this.hitBomb, null, this);
   }
@@ -145,7 +194,7 @@ class MyScene extends Scene {
     this.player.body.setSize(21, 31);
     this.player.body.setOffset(5, 16);
     this.player.setBounce(0.2);
-    // this.player.setCollideWorldBounds(true);
+    this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.platforms);
 
     this.anims.create({
@@ -176,6 +225,14 @@ class MyScene extends Scene {
   // ===================================================
   // update
   update() {
+    var cam = this.cameras.main;
+
+    // this.scoreText = this.add.text(this.player.x, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    this.scoreText = this.text.setText(['score: ' + this.score]);
+    this.winText = this.win_text.setText('You Win', { fontSize: '64px', fill: '#000' });
+    this.gameOverText = this.game_over_text.setText('You DED', { fontSize: '64px', fill: '#000' });
+
+
     if (this.cursors.left.isDown) {
       this.player.setVelocityX(-160);
 
