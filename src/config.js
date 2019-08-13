@@ -1,21 +1,22 @@
 // import Phaser from 'phaser'
 import { AUTO } from 'phaser';
 import MyScene from './MyScene';
-import PreloadScene from './PreloadScene'
+import PreloadScene from './PreloadScene';
 
-var config = {
-    type: AUTO,
-    parent: 'phaser-example',
-    width: 800,
-    height: 600,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 300 },
-            debug: true
-        }
+// eslint-disable-next-line import/no-mutable-exports
+const config = {
+  type: AUTO,
+  parent: 'phaser-example',
+  width: 800,
+  height: 600,
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: { y: 300 },
+      debug: true,
     },
-    scene: [ PreloadScene, MyScene]
+  },
+  scene: [PreloadScene, MyScene],
 };
 
-export { config }
+export { config };
